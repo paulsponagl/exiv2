@@ -40,7 +40,8 @@ static VALUE multiple_long_to_ruby(const Exiv2::Value& value) {
 // Convert a single rational to ruby rational
 static VALUE rational_to_ruby(const Exiv2::Value& value, long pos = 0) {
   Exiv2::Rational r = value.toRational(pos);
-    
+  if(r.second == 0) return Qnil;
+  
   // Rational must be definied/loaded
   ID rationalId = rb_intern("Rational");
   if(rb_const_defined(rb_cObject, rationalId)) {

@@ -42,6 +42,15 @@ describe Exiv2 do
     FileUtils.rm("spec/files/test_tmp.jpg")
   end
 
+  it "should read rational 0/0" do
+    FileUtils.cp("spec/files/rational_test.jpg", "spec/files/rational_test_tmp.jpg")
+    image = Exiv2::ImageFactory.open("spec/files/rational_test_tmp.jpg")
+    image.read_metadata
+    data = image.exif_data.to_hash
+    data['Exif.OlympusCs.ExposureShift'].should eql( nil )
+    FileUtils.rm("spec/files/rational_test_tmp.jpg")
+  end
+
   it 'reads UTF-8 data' do
     image = Exiv2::ImageFactory.open(Pathname.new("spec/files/photo_with_utf8_description.jpg").to_s)
     image.read_metadata
@@ -57,8 +66,8 @@ describe Exiv2 do
       image = Exiv2::ImageFactory.open(Pathname.new("spec/files/photo_with_utf8_description.jpg").to_s)
       image.read_metadata
       image.exif_data.each do |key,value|
-        key.encoding.should   == Encoding::UTF_8
-        value.encoding.should == Encoding::UTF_8
+        key.encoding.should   == Encoding::UTF_8 if key.kind_of? String
+        value.encoding.should == Encoding::UTF_8 if value.kind_of? String
       end
     end
   end
